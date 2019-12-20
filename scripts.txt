@@ -1,0 +1,32 @@
+This file contains some useful code snippets for this project
+
+Generate influxDb config: 
+docker run --rm influxdb influxd config > influxdb.conf  
+
+Create new influxdb: 
+docker run --rm \                                                        
+      -e INFLUXDB_DB=db0 -e INFLUXDB_ADMIN_ENABLED=true \
+      -e INFLUXDB_ADMIN_USER=admin -e INFLUXDB_ADMIN_PASSWORD=supersecretpassword \
+      -e INFLUXDB_USER=telegraf -e INFLUXDB_USER_PASSWORD=secretpassword \
+      -v $PWD:/var/lib/influxdb \
+      influxdb /init-influxdb.sh
+
+Post data to db example: 
+curl -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary 'cpu_load_short,host=server01,region=us-west value=0.78 1576601997000000000'
+
+Disable reporting: 
+In influxdb.conf set reporting-disabled = true
+
+Enable auth: 
+In influxdb.conf set auth-enabled = true
+
+Set users and dbs: 
+docker exec -it influxdb influx
+
+CREATE USER admin WITH PASSWORD 'supersecretpassword' WITH ALL PRIVILEGES
+AUTH
+CREATE DATABASE db0
+CREATE USER telegraf_nmc WITH PASSWORD 'REPLACE_ME'
+GRANT ALL TO telegraf_nmc
+CREATE USER grafana WITH PASSWORD 'REPLACE_ME'
+GRANT READ ON db0 TO grafana

@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+    grafana:
+        image: grafana/grafana
+        container_name: grafana
+        restart: always
+        ports:
+            - 3000:3000
+        networks:
+            - grafana-influxdb
+        volumes:
+            - grafana-volume:/var/lib/grafana
+    influxdb:
+        image: influxdb
+        container_name: influxdb
+        restart: always
+        ports:
+            - 8086:8086
+        networks:
+            - grafana-influxdb
+        volumes:
+            - influxdb-volume:/var/lib/influxdb
+            - ./influxdb.conf:/etc/influxdb/influxdb.conf:ro
+        environment:
+            INFLUXDB_ADMIN_USER: admin
+            INFLUXDB_ADMIN_PASSWORD: supersecretpassword
+            INFLUXDB_USER: telegraf
+            INFLUXDB_USER_PASSWORD: secretpassword
+            INFLUXDB_DB: db0
+
+networks:
+    grafana-influxdb:
+
+volumes:
+    grafana-volume:
+    influxdb-volume:
